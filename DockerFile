@@ -1,11 +1,7 @@
 FROM openjdk:11-jdk
 
-COPY . .
-
-RUN mvn clean
-
-COPY target/games-io-api-0.0.1-SNAPSHOT.jar games-io-api.jar
-
 EXPOSE 8080
 
-ENTRYPOINT [ "java", "-jar", "/games-io-api.jar" ]
+ADD target/games-io-api.jar games-io-api.jar
+
+ENTRYPOINT ["java", "-jar", "/games-io-api.jar"]
