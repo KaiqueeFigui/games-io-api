@@ -14,6 +14,7 @@ import io.games.api.gamesioapi.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
@@ -45,6 +46,10 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
+    @Caching(evict = {
+            @CacheEvict("reviews"),
+            @CacheEvict("review-by-id")
+    })
     public ReviewResponse postReview(ReviewRequest reviewRequest) {
         Review review = reviewRepository.save(reviewConverter.reviewRequestToReview(reviewRequest));
         return reviewConverter.reviewToReviewResponse(review);
@@ -62,7 +67,10 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    @CacheEvict("review-by-id")
+    @Caching(evict = {
+            @CacheEvict("reviews"),
+            @CacheEvict("review-by-id")
+    })
     public void deleteReviewById(Integer id) {
 
         MyUserDetails userDetails = (MyUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
