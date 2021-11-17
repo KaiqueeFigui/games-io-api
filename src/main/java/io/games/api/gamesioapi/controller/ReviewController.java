@@ -7,6 +7,7 @@ import io.games.api.gamesioapi.service.ReviewService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,5 +34,11 @@ public class ReviewController {
     @GetMapping("/{id}")
     public ResponseEntity<ReviewResponse> getReviewById(@PathVariable Integer id){
         return ResponseEntity.status(200).body(reviewService.getReviewById(id));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity deleteReviewById(@PathVariable Integer id){
+        reviewService.deleteReviewById(id);
+        return ResponseEntity.status(200).build();
     }
 }

@@ -12,4 +12,6 @@ public interface ReviewService {
     ReviewResponse postReview(ReviewRequest reviewRequest);
 
     ReviewResponse getReviewById(Integer id);
+
+    void deleteReviewById(Integer id);
 }
