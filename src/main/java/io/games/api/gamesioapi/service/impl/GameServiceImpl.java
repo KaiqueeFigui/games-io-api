@@ -9,6 +9,7 @@ import io.games.api.gamesioapi.model.Game;
 import io.games.api.gamesioapi.repository.GameRepository;
 import io.games.api.gamesioapi.service.GameService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
@@ -36,6 +37,7 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
+    @Cacheable("game-by-id")
     public GameResponse getGameById(Integer id) {
 
         Optional<Game> gameOptional = gameRepository.findById(id);
@@ -46,6 +48,7 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
+    @Cacheable("games-by-name")
     public GameResponse getGameByName(String name) {
         Optional<Game> gameOptional = gameRepository.findByName(name);
 
@@ -55,6 +58,7 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
+    @Cacheable("games-page")
     public Page<GameResponse> getGamePage(PageableRequest pageableRequest) {
 
         PageRequest pageable = PageRequest.of(pageableRequest.getPageNum(), pageableRequest.getPageSize());
