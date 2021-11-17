@@ -12,6 +12,7 @@ import io.games.api.gamesioapi.repository.ReviewRepository;
 import io.games.api.gamesioapi.service.ReviewService;
 import io.games.api.gamesioapi.utils.Constants;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -34,6 +35,7 @@ public class ReviewServiceImpl implements ReviewService {
     private final ReviewConverter reviewConverter;
 
     @Override
+    @Cacheable("reviews")
     public Page<ReviewResponse> getReviewsPage(PageableRequest pageRequest) {
 
         PageRequest pageable = PageRequest.of(pageRequest.getPageNum(), pageRequest.getPageSize());
@@ -49,7 +51,7 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    @Cacheable("review")
+    @Cacheable("review-by-id")
     public ReviewResponse getReviewById(Integer id) {
 
         Review review = reviewRepository.findById(id).orElseThrow(() -> {
@@ -60,6 +62,7 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
+    @CacheEvict("review-by-id")
     public void deleteReviewById(Integer id) {
 
         MyUserDetails userDetails = (MyUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
