@@ -9,6 +9,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 @RestController
 @RequestMapping("/games")
 @RequiredArgsConstructor
@@ -17,7 +19,7 @@ public class GameController {
     private final GameService gameService;
 
     @GetMapping
-    public ResponseEntity<Page<GameResponse>> getGamePage(PageableRequest pageableRequest){
+    public ResponseEntity<Page<GameResponse>> getGamePage(@Valid PageableRequest pageableRequest){
         return ResponseEntity.status(200).body(gameService.getGamePage(pageableRequest));
     }
 

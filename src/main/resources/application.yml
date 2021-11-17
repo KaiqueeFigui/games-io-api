@@ -17,6 +17,11 @@ spring:
     port: ${REDIS_PORT}
     timeout: ${REDIS_TIMEOUT}
 
+server:
+  error:
+    include-message: always
+    include-binding-errors: always
+
 jwt:
   api:
     secret: ${JWT_API_SECRET}
