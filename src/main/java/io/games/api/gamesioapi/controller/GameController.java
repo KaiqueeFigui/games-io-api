@@ -26,12 +26,12 @@ public class GameController {
         return ResponseEntity.status(201).body(gameService.postGame(gameRequest));
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/by-id/{id}")
     public ResponseEntity<GameResponse> getGameById(@PathVariable Integer id){
         return ResponseEntity.status(200).body(gameService.getGameById(id));
     }
 
-    @GetMapping("/{name}")
+    @GetMapping("/by-name/{name}")
     public ResponseEntity<GameResponse> getGameByName(@PathVariable String name){
         return ResponseEntity.status(200).body(gameService.getGameByName(name));
     }
