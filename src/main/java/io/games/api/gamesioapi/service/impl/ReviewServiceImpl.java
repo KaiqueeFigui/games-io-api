@@ -7,36 +7,34 @@ import io.games.api.gamesioapi.dto.request.ReviewRequest;
 import io.games.api.gamesioapi.dto.response.ReviewResponse;
 import io.games.api.gamesioapi.exception.ApiRequestException;
 import io.games.api.gamesioapi.model.Review;
-import io.games.api.gamesioapi.model.Role;
 import io.games.api.gamesioapi.repository.ReviewRepository;
 import io.games.api.gamesioapi.service.ReviewService;
 import io.games.api.gamesioapi.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class ReviewServiceImpl implements ReviewService {
 
     private final ReviewRepository reviewRepository;
     private final ReviewConverter reviewConverter;
 
     @Override
-    @Cacheable("reviews")
+    @Cacheable("reviews-page")
     public Page<ReviewResponse> getReviewsPage(PageableRequest pageRequest) {
 
         PageRequest pageable = PageRequest.of(pageRequest.getPageNum(), pageRequest.getPageSize());
@@ -46,10 +44,7 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    @Caching(evict = {
-            @CacheEvict("reviews"),
-            @CacheEvict("review-by-id")
-    })
+    @CacheEvict(value = { "reviews-page", "review-by-id" }, allEntries = true)
     public ReviewResponse postReview(ReviewRequest reviewRequest) {
         Review review = reviewRepository.save(reviewConverter.reviewRequestToReview(reviewRequest));
         return reviewConverter.reviewToReviewResponse(review);
@@ -67,10 +62,7 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    @Caching(evict = {
-            @CacheEvict("reviews"),
-            @CacheEvict("review-by-id")
-    })
+    @CacheEvict(value = { "reviews-page", "review-by-id" }, allEntries = true)
     public void deleteReviewById(Integer id) {
 
         MyUserDetails userDetails = (MyUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -86,6 +78,20 @@ public class ReviewServiceImpl implements ReviewService {
 
             throw new ApiRequestException("User is not authorized", HttpStatus.FORBIDDEN);
         }
+    }
+
+    @Override
+    @CacheEvict(value = { "reviews-page", "review-by-id" }, allEntries = true)
+    public ReviewResponse updateReview(ReviewRequest reviewRequest, Integer id) {
+
+        Review review = reviewRepository.findById(id).orElseThrow(() -> {
+            throw new ApiRequestException("Review not found", HttpStatus.NOT_FOUND);
+        });
+
+        Review reviewUpdate = reviewConverter.reviewRequestToReview(reviewRequest);
+        reviewUpdate.setId(review.getId());
+
+        return reviewConverter.reviewToReviewResponse(reviewRepository.save(reviewUpdate));
     }
 
     private boolean isUserAdmin(Collection<? extends GrantedAuthority> grantedAuthorities){

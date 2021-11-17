@@ -5,7 +5,6 @@ import io.games.api.gamesioapi.converter.GameConverter;
 import io.games.api.gamesioapi.converter.ReviewConverter;
 import io.games.api.gamesioapi.converter.UserConverter;
 import io.games.api.gamesioapi.dto.request.ReviewRequest;
-import io.games.api.gamesioapi.dto.response.GameResponse;
 import io.games.api.gamesioapi.dto.response.ReviewResponse;
 import io.games.api.gamesioapi.exception.ApiRequestException;
 import io.games.api.gamesioapi.model.Game;

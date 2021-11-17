@@ -14,4 +14,6 @@ public interface ReviewService {
     ReviewResponse getReviewById(Integer id);
 
     void deleteReviewById(Integer id);
+
+    ReviewResponse updateReview(ReviewRequest reviewRequest, Integer id);
 }
