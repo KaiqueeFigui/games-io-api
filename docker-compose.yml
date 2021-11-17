@@ -1,16 +1,16 @@
 version: '3'
 services:
-  mysql:
-    image: mysql:latest
-    ports:
-      - 3306:3306
-    expose:
-      - 3306
-    environment:
-      - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
-      - MYSQL_DATABASE=games_io
-      - MYSQL_USER=games_io
-      - MYSQL_PASSWORD=${DB_PASSWORD}
+#  mysql:
+#    image: mysql:latest
+#    ports:
+#      - 3306:3306
+#    expose:
+#      - 3306
+#    environment:
+#      - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
+#      - MYSQL_DATABASE=games_io
+#      - MYSQL_USER=games_io
+#      - MYSQL_PASSWORD=${DB_PASSWORD}
   redis:
     image: redis:latest
     ports:
@@ -33,5 +33,5 @@ services:
       - REDIS_TIMEOUT=60000
       - JWT_API_SECRET=${JWT_API_SECRET}
     depends_on:
-      - mysql
+#      - mysql
       - redis
