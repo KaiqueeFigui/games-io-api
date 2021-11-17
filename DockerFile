@@ -1,7 +1,11 @@
 FROM openjdk:8
 
-ADD target/games-io-api-0.0.1-SNAPSHOT.jar games-io-api.jar
+COPY ./games-io-api/ /var/www/
+
+WORKDIR /var/www/
+
+RUN mvn clean package
+
+ENTRYPOINT java -jar ./target/games-io-api-0.0.1-SNAPSHOT.jar
 
 EXPOSE 8080
-
-ENTRYPOINT ["java", "-jar" , "games-io-api.jar"]
