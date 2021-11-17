@@ -63,7 +63,6 @@ public class ReviewConverterImpl implements ReviewConverter {
     }
 
     @Override
-    @Cacheable("page_review")
     public Page<ReviewResponse> reviewPageToReviewResponsePage(Page<Review> reviewPage) {
 
         List<ReviewResponse> reviewResponseList = reviewPage.
