@@ -19,6 +19,7 @@ public class MyUserDetails implements UserDetails {
     private String password;
     private String nickname;
     private String name;
+    private boolean active;
     private List<Role> roles;
 
     public MyUserDetails(User user) {
@@ -28,6 +29,7 @@ public class MyUserDetails implements UserDetails {
         this.nickname = user.getNickname();
         this.name = user.getName();
         this.roles = user.getRoles();
+        this.active = user.isActive();
     }
 
     public MyUserDetails() {
@@ -80,6 +82,6 @@ public class MyUserDetails implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return this.active;
     }
 }

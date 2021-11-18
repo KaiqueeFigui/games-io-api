@@ -2,6 +2,7 @@ package io.games.api.gamesioapi.controller;
 
 import io.games.api.gamesioapi.config.MyUserDetails;
 import io.games.api.gamesioapi.dto.request.AuthRequest;
+import io.games.api.gamesioapi.dto.request.TokenRequest;
 import io.games.api.gamesioapi.dto.request.UserRequest;
 import io.games.api.gamesioapi.dto.response.AuthResponse;
 import io.games.api.gamesioapi.dto.response.UserResponse;
@@ -32,6 +33,12 @@ public class UserController {
     @PostMapping("/auth")
     public ResponseEntity<AuthResponse> getAuth(@RequestBody @Valid AuthRequest authRequest) {
         return ResponseEntity.status(200).body(userService.createAuthToken(authRequest));
+    }
+
+    @GetMapping("/activate")
+    public ResponseEntity activateAccount(@Valid TokenRequest tokenRequest){
+        userService.activateAccount(tokenRequest);
+        return ResponseEntity.status(200).build();
     }
 
 }

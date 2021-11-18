@@ -24,6 +24,7 @@ public class UserConverterImpl implements UserConverter {
                 .name(userRequest.getName())
                 .nickname(userRequest.getNickname())
                 .password(userRequest.getPassword())
+                .active(false)
                 .roles(List.of(roleRepositoy.findByName("USER").get()))
                 .build();
     }

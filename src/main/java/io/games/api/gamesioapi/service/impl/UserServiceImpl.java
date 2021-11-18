@@ -2,10 +2,12 @@ package io.games.api.gamesioapi.service.impl;
 
 import io.games.api.gamesioapi.converter.UserConverter;
 import io.games.api.gamesioapi.dto.request.AuthRequest;
+import io.games.api.gamesioapi.dto.request.TokenRequest;
 import io.games.api.gamesioapi.dto.request.UserRequest;
 import io.games.api.gamesioapi.dto.response.AuthResponse;
 import io.games.api.gamesioapi.dto.response.UserResponse;
 import io.games.api.gamesioapi.exception.ApiRequestException;
+import io.games.api.gamesioapi.mailing.EmailConfig;
 import io.games.api.gamesioapi.model.User;
 import io.games.api.gamesioapi.repository.UserRepository;
 import io.games.api.gamesioapi.service.UserService;
@@ -34,6 +36,7 @@ public class UserServiceImpl implements UserService {
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtTokenUtil;
     private final BCryptPasswordEncoder passwordEncoder;
+    private final EmailConfig emailConfig;
 
     @Override
     public UserResponse postUser(UserRequest userRequest) {
@@ -46,7 +49,16 @@ public class UserServiceImpl implements UserService {
 
         User user = userConverter.userRequestToUser(userRequest);
 
+        sendMailToActivateAccount(user);
+
         return userConverter.userToUserResponse(userRepository.save(user));
+    }
+
+    private void sendMailToActivateAccount(User user) {
+
+        String message = "Hello " + user.getName() + " your token to activate your account in Games.io is: " + jwtTokenUtil.generateAccountActivateToken(user);
+
+        emailConfig.sendEmail(message, "Activate your account", user.getEmail());
     }
 
     private Optional<String> checkNewUser(UserRequest userRequest) {
@@ -77,5 +89,20 @@ public class UserServiceImpl implements UserService {
         final String jwt = jwtTokenUtil.generateToken(userDetails);
 
         return new AuthResponse(jwt);
+    }
+
+    @Override
+    public void activateAccount(TokenRequest tokenRequest) {
+
+        User user = userRepository.findByEmail(jwtTokenUtil.extractEmail(tokenRequest.getToken()))
+                .orElseThrow(() -> {
+                    throw new ApiRequestException("User does not exist", HttpStatus.NOT_FOUND);
+                });
+
+        if (!jwtTokenUtil.validateTokenActivateAccount(tokenRequest.getToken(), user)){
+            throw new ApiRequestException("Token is not valid", HttpStatus.UNAUTHORIZED);
+        }
+
+        user.setActive(true);
     }
 }

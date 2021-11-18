@@ -7,7 +7,8 @@ import javax.persistence.*;
 import java.util.List;
 
 @Entity
-@Data
+@Getter
+@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -24,6 +25,8 @@ public class User {
     private String nickname;
 
     private String password;
+
+    private boolean active;
 
     @ManyToMany(fetch = FetchType.EAGER)
     private List<Role> roles;

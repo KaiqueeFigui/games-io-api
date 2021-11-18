@@ -1,5 +1,6 @@
 package io.games.api.gamesioapi.utils;
 
+import io.games.api.gamesioapi.model.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -48,6 +49,16 @@ public class JwtUtil {
         return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10))
                 .signWith(SignatureAlgorithm.HS256, SECRET_KEY).compact();
+    }
+
+    public String generateAccountActivateToken(User user){
+        Map<String, Object> claims = new HashMap<>();
+        return createToken(claims, user.getEmail());
+    }
+
+    public Boolean validateTokenActivateAccount(String token, User user) {
+        final String username = extractEmail(token);
+        return (username.equals(user.getEmail()) && !isTokenExpired(token));
     }
 
     public Boolean validateToken(String token, UserDetails userDetails) {
