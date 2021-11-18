@@ -32,6 +32,8 @@ services:
       - REDIS_PORT=6379
       - REDIS_TIMEOUT=60000
       - JWT_API_SECRET=${JWT_API_SECRET}
+      - EMAIL_ADDRESS=${EMAIL_ADDRESS}
+      - EMAIL_PASSWORD=${EMAIL_PASSWORD}
     depends_on:
       - mysql
       - redis
