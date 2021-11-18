@@ -42,4 +42,5 @@ jobs:
           ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
           ssh_public_key: ${{ secrets.SSH_PUBLIC_KEY }}
           deployment_mode: docker-compose
+          deploy_path: /home/ubuntu/projetos/games-io-api
           args: up -d --build
