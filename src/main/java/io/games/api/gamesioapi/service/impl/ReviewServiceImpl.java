@@ -65,19 +65,16 @@ public class ReviewServiceImpl implements ReviewService {
     @CacheEvict(value = { "reviews-page", "review-by-id" }, allEntries = true)
     public void deleteReviewById(Integer id) {
 
-        MyUserDetails userDetails = (MyUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
         Review review = reviewRepository.findById(id).orElseThrow(() -> {
             throw new ApiRequestException("Review does not exists", HttpStatus.NOT_FOUND);
         });
 
-        if (review.getAuthor().getId().equals(userDetails.getId()) || isUserAdmin(userDetails.getAuthorities())){
-
-            reviewRepository.delete(review);
-        }else {
+        if (!canUserPutReview(review)){
 
             throw new ApiRequestException("User is not authorized", HttpStatus.FORBIDDEN);
         }
+
+        reviewRepository.delete(review);
     }
 
     @Override
@@ -85,8 +82,12 @@ public class ReviewServiceImpl implements ReviewService {
     public ReviewResponse updateReview(ReviewRequest reviewRequest, Integer id) {
 
         Review review = reviewRepository.findById(id).orElseThrow(() -> {
-            throw new ApiRequestException("Review not found", HttpStatus.NOT_FOUND);
+            throw new ApiRequestException("Review does not exists", HttpStatus.NOT_FOUND);
         });
+
+        if (!canUserPutReview(review)){
+            throw new ApiRequestException("User is not authorized", HttpStatus.FORBIDDEN);
+        }
 
         Review reviewUpdate = reviewConverter.reviewRequestToReview(reviewRequest);
         reviewUpdate.setId(review.getId());
@@ -96,8 +97,19 @@ public class ReviewServiceImpl implements ReviewService {
 
     private boolean isUserAdmin(Collection<? extends GrantedAuthority> grantedAuthorities){
         List<GrantedAuthority> roles =  grantedAuthorities.stream()
-                .filter(user -> user.equals(Constants.ROLE_ADMIN)).collect(Collectors.toList());
+                .filter(authority -> authority.equals(Constants.ROLE_ADMIN)).collect(Collectors.toList());
 
         return !roles.isEmpty();
+    }
+
+    private boolean canUserPutReview(Review review){
+
+        MyUserDetails userDetails = (MyUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        if (review.getAuthor().getId().equals(userDetails.getId()) || isUserAdmin(userDetails.getAuthorities())){
+            return true;
+        }else {
+            return false;
+        }
     }
 }
