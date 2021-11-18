@@ -16,4 +16,6 @@ public interface GameService {
     GameResponse getGameByName(String name);
 
     Page<GameResponse> getGamePage(PageableRequest pageableRequest);
+
+    void deleteById(Integer id);
 }

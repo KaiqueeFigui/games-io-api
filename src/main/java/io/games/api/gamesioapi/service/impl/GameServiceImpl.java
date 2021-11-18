@@ -1,5 +1,6 @@
 package io.games.api.gamesioapi.service.impl;
 
+import io.games.api.gamesioapi.config.MyUserDetails;
 import io.games.api.gamesioapi.converter.GameConverter;
 import io.games.api.gamesioapi.dto.request.GameRequest;
 import io.games.api.gamesioapi.dto.request.PageableRequest;
@@ -13,12 +14,17 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
+import static io.games.api.gamesioapi.utils.CheckUser.isUserAdmin;
+
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class GameServiceImpl implements GameService {
 
     private final GameRepository gameRepository;
@@ -66,5 +72,26 @@ public class GameServiceImpl implements GameService {
         Page<Game> gamePage = gameRepository.findAll(pageable);
 
         return gameConverter.gamePageToGameResponsePage(gamePage);
+    }
+
+    @Override
+    public void deleteById(Integer id) {
+
+        Game game = gameRepository.findById(id).orElseThrow(() -> {
+            throw new ApiRequestException("Games does not exists", HttpStatus.NOT_FOUND);
+        });
+
+        if (!canUserPutGame(game)){
+            throw new ApiRequestException("User is not authorized", HttpStatus.FORBIDDEN);
+        }
+
+        gameRepository.deleteById(id);
+    }
+
+    private boolean canUserPutGame(Game game){
+
+        MyUserDetails userDetails = (MyUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        return isUserAdmin(userDetails.getAuthorities());
     }
 }

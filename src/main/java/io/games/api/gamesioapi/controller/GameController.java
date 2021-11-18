@@ -37,4 +37,10 @@ public class GameController {
     public ResponseEntity<GameResponse> getGameByName(@PathVariable String name){
         return ResponseEntity.status(200).body(gameService.getGameByName(name));
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity deleteGameById(@PathVariable Integer id){
+        gameService.deleteById(id);
+        return ResponseEntity.status(200).build();
+    }
 }
