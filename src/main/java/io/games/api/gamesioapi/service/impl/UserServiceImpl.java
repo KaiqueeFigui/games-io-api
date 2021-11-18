@@ -17,11 +17,10 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -34,6 +33,7 @@ public class UserServiceImpl implements UserService {
     private final UserDetailsService userDetailsService;
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtTokenUtil;
+    private final BCryptPasswordEncoder passwordEncoder;
 
     @Override
     public UserResponse postUser(UserRequest userRequest) {
@@ -41,6 +41,8 @@ public class UserServiceImpl implements UserService {
         checkNewUser(userRequest).ifPresent(message -> {
             throw new ApiRequestException(message, HttpStatus.BAD_REQUEST);
         });
+
+        userRequest.setPassword(passwordEncoder.encode(userRequest.getPassword()));
 
         User user = userConverter.userRequestToUser(userRequest);
 

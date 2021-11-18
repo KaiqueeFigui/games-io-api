@@ -3,13 +3,11 @@ package io.games.api.gamesioapi.converter.impl;
 import io.games.api.gamesioapi.converter.UserConverter;
 import io.games.api.gamesioapi.dto.request.UserRequest;
 import io.games.api.gamesioapi.dto.response.UserResponse;
-import io.games.api.gamesioapi.model.Role;
 import io.games.api.gamesioapi.model.User;
 import io.games.api.gamesioapi.repository.RoleRepositoy;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Component
