@@ -25,6 +25,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static io.games.api.gamesioapi.utils.CheckUser.isUserAdmin;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -93,13 +95,6 @@ public class ReviewServiceImpl implements ReviewService {
         reviewUpdate.setId(review.getId());
 
         return reviewConverter.reviewToReviewResponse(reviewRepository.save(reviewUpdate));
-    }
-
-    private boolean isUserAdmin(Collection<? extends GrantedAuthority> grantedAuthorities){
-        List<GrantedAuthority> roles =  grantedAuthorities.stream()
-                .filter(authority -> authority.equals(Constants.ROLE_ADMIN)).collect(Collectors.toList());
-
-        return !roles.isEmpty();
     }
 
     private boolean canUserPutReview(Review review){
