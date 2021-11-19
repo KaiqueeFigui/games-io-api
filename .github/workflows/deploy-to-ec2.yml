@@ -42,7 +42,7 @@ jobs:
             cd /home/ubuntu/GamesIoApi/games-io-api &&
             git checkout main &&
             git fetch --all &&
-            git reset --hard origin/master &&
-            git pull origin master &&
-            sudo docker-compose -f docker-compose.prod.yml up -d --build
+            git reset --hard origin/main &&
+            git pull origin main &&
+            sudo docker-compose -f docker-compose.yml up -d --build
           '
