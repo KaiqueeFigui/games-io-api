@@ -37,7 +37,8 @@ jobs:
             
         run: |
           echo "$SSH_PRIVATE_KEY" > private_key.pem && chmod 600 private_key.pem
-          sudo ssh -i "private_key.pem" ${SSH_USERNAME}@${SSH_HOSTNAME} '
+          echo ${SSH_USERNAME}@${SSH_HOSTNAME}
+          ssh -i "private_key.pem" ${SSH_USERNAME}@${SSH_HOSTNAME} '
           
             cd /home/ubuntu/GamesIoApi/games-io-api &&
             git checkout main &&
