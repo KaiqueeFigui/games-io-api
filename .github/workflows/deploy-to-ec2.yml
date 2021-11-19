@@ -10,25 +10,24 @@ on:
   workflow_dispatch:
 
 jobs:
+
   build:
-
     runs-on: ubuntu-latest
-
+    
     steps:
-      - uses: actions/checkout@v2
-
-      - name: Build the docker-compose
-        run: docker-compose up -d --build
-
-  deploy:
-    needs: build
+    - uses: actions/checkout@v2
     
+    - name: Build the docker_compose
+      run: docker-compose up -d --build
+  
+    - name: Buid the application
+      run: docker-compose exec -T games-io-api_games-io-api
+      
+  Deploy:
+    needs: build
     runs-on: ubuntu-latest
     
-    steps: 
-    
-      - name: Deploy docker compose
-      
+    steps:
       - uses: actions/checkout@v2 
       - name: Deploy in EC2
         env:
@@ -45,5 +44,5 @@ jobs:
             git fetch --all &&
             git reset --hard origin/master &&
             git pull origin master &&
-            docker-compose -f docker-compose.yml up -d --build 
-          '
+            docker-compose -f docker-compose.prod.yml up -d --build 
+          
