@@ -37,7 +37,7 @@ jobs:
             
         run: |
           echo "$PRIVATE_KEY" > private_key.pem && chmod 600 private_key.pem
-          echo ${ USER_NAME }@${ HOSTNAME }
+          echo $USER_NAME"@"$HOSTNAME
           ssh -i "private_key.pem" ${ USER_NAME }@${ HOSTNAME } '
           
             cd /home/ubuntu/GamesIoApi/games-io-api &&
