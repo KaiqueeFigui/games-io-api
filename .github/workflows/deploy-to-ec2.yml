@@ -37,12 +37,12 @@ jobs:
             
         run: |
           echo "$SSH_PRIVATE_KEY" > private_key.pem && chmod 600 private_key.pem
-          ssh -i "private_key.pem" ${SSH_USERNAME}@${SSH_HOSTNAME} '
+          sudo ssh -i "private_key.pem" ${SSH_USERNAME}@${SSH_HOSTNAME} '
           
             cd /home/ubuntu/GamesIoApi/games-io-api &&
             git checkout main &&
             git fetch --all &&
             git reset --hard origin/master &&
             git pull origin master &&
-            docker-compose -f docker-compose.prod.yml up -d --build 
+            sudo docker-compose -f docker-compose.prod.yml up -d --build
           '
