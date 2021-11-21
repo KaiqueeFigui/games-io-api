@@ -2,10 +2,7 @@ package io.games.api.gamesioapi.service.impl;
 
 import io.games.api.gamesioapi.config.MyUserDetails;
 import io.games.api.gamesioapi.converter.UserConverter;
-import io.games.api.gamesioapi.dto.request.AuthRequest;
-import io.games.api.gamesioapi.dto.request.PutUserRequest;
-import io.games.api.gamesioapi.dto.request.TokenRequest;
-import io.games.api.gamesioapi.dto.request.UserRequest;
+import io.games.api.gamesioapi.dto.request.*;
 import io.games.api.gamesioapi.dto.response.AuthResponse;
 import io.games.api.gamesioapi.dto.response.UserResponse;
 import io.games.api.gamesioapi.exception.ApiRequestException;
@@ -62,7 +59,7 @@ public class UserServiceImpl implements UserService {
 
     private void sendMailToActivateAccount(User user) {
 
-        String message = "Hello " + user.getName() + " your token to activate your account in Games.io is: " + jwtTokenUtil.generateAccountActivateToken(user);
+        String message = "Hello " + user.getName() + " your token to activate your account in Games.io is: " + jwtTokenUtil.generateUserToken(user);
 
         emailConfig.sendEmail(message, "Activate your account", user.getEmail());
     }
@@ -105,7 +102,7 @@ public class UserServiceImpl implements UserService {
                     throw new ApiRequestException("User does not exist", HttpStatus.NOT_FOUND);
                 });
 
-        if (!jwtTokenUtil.validateTokenActivateAccount(tokenRequest.getToken(), user)){
+        if (!jwtTokenUtil.validateUserToken(tokenRequest.getToken(), user)){
             throw new ApiRequestException("Token is not valid", HttpStatus.UNAUTHORIZED);
         }
 
@@ -125,6 +122,24 @@ public class UserServiceImpl implements UserService {
         sendNotificationMailUpdatedAccount(user);
 
         return userConverter.userToUserResponse(user);
+    }
+
+    @Override
+    public void passwordResetRequest(PasswordResetRequest passwordResetRequest) {
+
+        User user = userRepository.findByEmail(passwordResetRequest.getEmail()).orElseThrow(() -> {
+            throw new ApiRequestException("User does not exists", HttpStatus.NOT_FOUND);
+        });
+
+        sendPasswordResetTokenViaEmail(user);
+    }
+
+    private void sendPasswordResetTokenViaEmail(User user) {
+
+        String message = String.format(Constants.RESET_PASSWORD_MESSAGE,
+                user.getName(),
+                jwtTokenUtil.generateUserToken(user));
+        emailConfig.sendEmail(message, Constants.RESET_PASSWORD_SUBJECT, user.getEmail());
     }
 
     private void sendNotificationMailUpdatedAccount(User user) {
