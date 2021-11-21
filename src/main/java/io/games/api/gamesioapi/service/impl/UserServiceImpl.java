@@ -1,7 +1,9 @@
 package io.games.api.gamesioapi.service.impl;
 
+import io.games.api.gamesioapi.config.MyUserDetails;
 import io.games.api.gamesioapi.converter.UserConverter;
 import io.games.api.gamesioapi.dto.request.AuthRequest;
+import io.games.api.gamesioapi.dto.request.PutUserRequest;
 import io.games.api.gamesioapi.dto.request.TokenRequest;
 import io.games.api.gamesioapi.dto.request.UserRequest;
 import io.games.api.gamesioapi.dto.response.AuthResponse;
@@ -11,18 +13,22 @@ import io.games.api.gamesioapi.mailing.EmailConfig;
 import io.games.api.gamesioapi.model.User;
 import io.games.api.gamesioapi.repository.UserRepository;
 import io.games.api.gamesioapi.service.UserService;
+import io.games.api.gamesioapi.utils.Constants;
 import io.games.api.gamesioapi.utils.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
 @Service
@@ -104,5 +110,46 @@ public class UserServiceImpl implements UserService {
         }
 
         user.setActive(true);
+    }
+
+    @Override
+    public UserResponse putUser(PutUserRequest putUserRequest) {
+
+        MyUserDetails myUserDetails = (MyUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        User user = userRepository.findById(myUserDetails.getId()).orElseThrow(() -> {
+           throw new ApiRequestException("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
+        });
+
+        updateUser(user, putUserRequest);
+        sendNotificationMailUpdatedAccount(user);
+
+        return userConverter.userToUserResponse(user);
+    }
+
+    private void sendNotificationMailUpdatedAccount(User user) {
+
+        String message = String.format(
+                Constants.UPDATED_ACCOUNT_MESSAGE,
+                user.getName(),
+                localDateTimeFormat(LocalDateTime.now()));
+
+        emailConfig.sendEmail(message, Constants.UPDATED_ACCOUNT_SUBJECT, user.getEmail());
+    }
+
+    private void updateUser(User user, PutUserRequest putUserRequest) {
+        user.setEmail(putUserRequest.getEmail());
+        user.setName(putUserRequest.getName());
+        user.setNickname(putUserRequest.getNickname());
+    }
+
+    private String localDateTimeFormat(LocalDateTime localDateTime){
+
+        String hours = localDateTime.toString().substring(
+                localDateTime.toString().indexOf("T") + 1 ,localDateTime.toString().indexOf("."));
+
+        return String.format("%s %s",
+                localDateTime.format(DateTimeFormatter.ISO_LOCAL_DATE),
+                hours);
     }
 }
