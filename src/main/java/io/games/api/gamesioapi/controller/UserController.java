@@ -45,4 +45,10 @@ public class UserController {
         userService.passwordResetRequest(passwordResetRequest);
         return ResponseEntity.status(200).build();
     }
+
+    @PostMapping("/password/reset")
+    public ResponseEntity resetPassword(@RequestBody @Valid PasswordResetTokenRequest passwordResetTokenRequest){
+        userService.passwordReset(passwordResetTokenRequest);
+        return ResponseEntity.status(200).build();
+    }
 }
