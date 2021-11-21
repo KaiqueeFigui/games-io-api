@@ -134,6 +134,22 @@ public class UserServiceImpl implements UserService {
         sendPasswordResetTokenViaEmail(user);
     }
 
+    @Override
+    public void passwordReset(PasswordResetTokenRequest passwordResetTokenRequest) {
+
+        String email = jwtTokenUtil.extractEmail(passwordResetTokenRequest.getToken());
+
+        User user = userRepository.findByEmail(email).orElseThrow(() -> {
+            throw new ApiRequestException("User does not exists", HttpStatus.NOT_FOUND);
+        });
+
+        if (!jwtTokenUtil.validateUserToken(passwordResetTokenRequest.getToken(), user)){
+            throw new ApiRequestException("Token is expired", HttpStatus.UNAUTHORIZED);
+        }
+
+        user.setPassword(passwordEncoder.encode(passwordResetTokenRequest.getPassword()));
+    }
+
     private void sendPasswordResetTokenViaEmail(User user) {
 
         String message = String.format(Constants.RESET_PASSWORD_MESSAGE,

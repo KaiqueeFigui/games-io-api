@@ -15,4 +15,6 @@ public interface UserService {
     UserResponse putUser(PutUserRequest putUserRequest);
 
     void passwordResetRequest(PasswordResetRequest passwordResetRequest);
+
+    void passwordReset(PasswordResetTokenRequest passwordResetTokenRequest);
 }
