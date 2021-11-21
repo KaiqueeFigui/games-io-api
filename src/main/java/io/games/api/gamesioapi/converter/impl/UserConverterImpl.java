@@ -1,6 +1,7 @@
 package io.games.api.gamesioapi.converter.impl;
 
 import io.games.api.gamesioapi.converter.UserConverter;
+import io.games.api.gamesioapi.dto.request.PutUserRequest;
 import io.games.api.gamesioapi.dto.request.UserRequest;
 import io.games.api.gamesioapi.dto.response.UserResponse;
 import io.games.api.gamesioapi.model.User;

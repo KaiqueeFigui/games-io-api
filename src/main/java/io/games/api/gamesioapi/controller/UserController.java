@@ -1,7 +1,7 @@
 package io.games.api.gamesioapi.controller;
 
-import io.games.api.gamesioapi.config.MyUserDetails;
 import io.games.api.gamesioapi.dto.request.AuthRequest;
+import io.games.api.gamesioapi.dto.request.PutUserRequest;
 import io.games.api.gamesioapi.dto.request.TokenRequest;
 import io.games.api.gamesioapi.dto.request.UserRequest;
 import io.games.api.gamesioapi.dto.response.AuthResponse;
@@ -10,9 +10,6 @@ import io.games.api.gamesioapi.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -41,4 +38,8 @@ public class UserController {
         return ResponseEntity.status(200).build();
     }
 
+    @PutMapping
+    public ResponseEntity<UserResponse> putUser(@RequestBody @Valid PutUserRequest putUserRequest){
+        return ResponseEntity.status(200).body(userService.putUser(putUserRequest));
+    }
 }
