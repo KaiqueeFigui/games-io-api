@@ -2,6 +2,8 @@
 name: Deploy docker compose
 
 on:
+  push:
+    branches: [ main ]
   pull_request:
     branches: [ main ]
 
