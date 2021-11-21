@@ -51,12 +51,12 @@ public class JwtUtil {
                 .signWith(SignatureAlgorithm.HS256, SECRET_KEY).compact();
     }
 
-    public String generateAccountActivateToken(User user){
+    public String generateUserToken(User user){
         Map<String, Object> claims = new HashMap<>();
         return createToken(claims, user.getEmail());
     }
 
-    public Boolean validateTokenActivateAccount(String token, User user) {
+    public Boolean validateUserToken(String token, User user) {
         final String username = extractEmail(token);
         return (username.equals(user.getEmail()) && !isTokenExpired(token));
     }
