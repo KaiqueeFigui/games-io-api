@@ -2,12 +2,15 @@ package io.games.api.gamesioapi.service.impl;
 
 import io.games.api.gamesioapi.converter.CategoryConverter;
 import io.games.api.gamesioapi.dto.request.CategoryRequest;
+import io.games.api.gamesioapi.dto.request.PageableRequest;
 import io.games.api.gamesioapi.dto.response.CategoryResponse;
 import io.games.api.gamesioapi.exception.ApiRequestException;
 import io.games.api.gamesioapi.model.Category;
 import io.games.api.gamesioapi.repository.CategoryRepository;
 import io.games.api.gamesioapi.service.CategoryService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -65,5 +68,15 @@ public class CategoryServiceImpl implements CategoryService {
         }
 
         return categoryConverter.categoryListToCategoryResponseList(categories);
+    }
+
+    @Override
+    public Page<CategoryResponse> getCategoryPage(PageableRequest pageableRequest) {
+
+        PageRequest pageable = PageRequest.of(pageableRequest.getPageNum(), pageableRequest.getPageSize());
+
+        Page<Category> categoryPage = categoryRepository.findAll(pageable);
+
+        return categoryConverter.categoryListToCategoryResponsePage(categoryPage);
     }
 }
