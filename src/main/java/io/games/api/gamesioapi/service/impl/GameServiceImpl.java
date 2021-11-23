@@ -10,6 +10,7 @@ import io.games.api.gamesioapi.model.Game;
 import io.games.api.gamesioapi.repository.GameRepository;
 import io.games.api.gamesioapi.service.GameService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -75,6 +76,7 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
+    @CacheEvict(value = {"games-page", "games-by-name", "game-by-id"})
     public void deleteById(Integer id) {
 
         Game game = gameRepository.findById(id).orElseThrow(() -> {

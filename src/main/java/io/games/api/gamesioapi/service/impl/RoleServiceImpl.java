@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static io.games.api.gamesioapi.utils.CheckUser.isUserAdmin;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -59,13 +61,7 @@ public class RoleServiceImpl implements RoleService {
 
         MyUserDetails userDetails = (MyUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        // Filter by ROLE_ADMIN get GrantedAuthority and returns a List
-        // verify if the List's lesser than 0
-        if (userDetails.getAuthorities()
-                .stream()
-                .filter(grantedAuthority ->
-                        grantedAuthority.getAuthority().equals(Constants.ROLE_ADMIN)).collect(Collectors.toList())
-                .size() < 0){
+        if (isUserAdmin(userDetails.getAuthorities())){
             throw new ApiRequestException("Access denied", HttpStatus.FORBIDDEN);
         }
 
