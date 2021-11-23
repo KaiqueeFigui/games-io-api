@@ -5,6 +5,8 @@ import io.games.api.gamesioapi.dto.request.PageableRequest;
 import io.games.api.gamesioapi.dto.response.CategoryResponse;
 import io.games.api.gamesioapi.service.CategoryService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
