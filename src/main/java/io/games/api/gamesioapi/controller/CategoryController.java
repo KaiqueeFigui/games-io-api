@@ -21,25 +21,21 @@ public class CategoryController {
     private final CategoryService categoryService;
 
     @PostMapping
-    @CacheEvict(value = {"category-by-id", "category-by-name", "category-page"})
     public ResponseEntity<CategoryResponse> postCategory(@RequestBody @Valid CategoryRequest categoryRequest){
         return ResponseEntity.status(201).body(categoryService.postCategory(categoryRequest));
     }
 
     @GetMapping("/by-id/{id}")
-    @Cacheable("category-by-id")
     public ResponseEntity<CategoryResponse> getCategoryById(@PathVariable Integer id){
         return ResponseEntity.status(200).body(categoryService.getCategoryById(id));
     }
 
     @GetMapping("/by-name/{name}")
-    @Cacheable("category-by-name")
     public ResponseEntity<CategoryResponse> getCategoryByName(@PathVariable String name){
         return ResponseEntity.status(200).body(categoryService.getCategoryByName(name));
     }
 
     @GetMapping
-    @Cacheable("category-page")
     public ResponseEntity<Page<CategoryResponse>> getCategoryByPage(PageableRequest pageableRequest){
         return ResponseEntity.status(200).body(categoryService.getCategoryPage(pageableRequest));
     }

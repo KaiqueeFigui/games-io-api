@@ -9,6 +9,8 @@ import io.games.api.gamesioapi.model.Category;
 import io.games.api.gamesioapi.repository.CategoryRepository;
 import io.games.api.gamesioapi.service.CategoryService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
@@ -25,6 +27,7 @@ public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository categoryRepository;
 
     @Override
+    @CacheEvict(value = {"category-by-id", "category-by-name", "category-page"})
     public CategoryResponse postCategory(CategoryRequest categoryRequest) {
 
         categoryRepository.findByName(categoryRequest.getName()).ifPresent(category -> {
@@ -37,6 +40,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    @Cacheable("category-by-id")
     public CategoryResponse getCategoryById(Integer id) {
 
         Optional<Category> categoryOptional = categoryRepository.findById(id);
@@ -48,6 +52,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    @Cacheable("category-by-name")
     public CategoryResponse getCategoryByName(String name) {
 
         Optional<Category> categoryOptional = categoryRepository.findByName(name);
@@ -71,6 +76,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    @Cacheable("category-page")
     public Page<CategoryResponse> getCategoryPage(PageableRequest pageableRequest) {
 
         PageRequest pageable = PageRequest.of(pageableRequest.getPageNum(), pageableRequest.getPageSize());
